@@ -1,0 +1,3 @@
+# YoTouch Signing Key
+network=Preprod
+bech32=ed25519_sk1whrgxw8hpwu9w7ul5nnk4frau4jypfqvjhl35ggg75g7xhs30lls4n7qe5

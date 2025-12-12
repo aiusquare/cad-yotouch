@@ -1,0 +1,3 @@
+# YoTouch Enterprise Address
+network=Preprod
+address=addr_test1vz4lq5uxegy6r05x05hdgpf08rkr2tgw28t38065y00yv2s4xgg0k

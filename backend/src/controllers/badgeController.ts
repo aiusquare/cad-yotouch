@@ -1,0 +1,43 @@
+import type { Request, Response, NextFunction } from "express";
+import { mintBadge } from "../services/badgeService.js";
+import { logger } from "../lib/logger.js";
+
+export async function handleMintBadge(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    console.log("🔷 handleMintBadge called with body:", req.body);
+    const userId = (req as any).user?.sub || "test-user"; // From Supabase JWT middleware or test user
+    const { level, action } = req.body;
+
+    if (typeof level !== "number") {
+      return res
+        .status(400)
+        .json({ error: "level (number) is required in request body" });
+    }
+
+    logger.info({ userId, level, action }, "Badge mint requested");
+
+    // Get owner VKH from request body (required for now)
+    // TODO: Fetch from Supabase profiles table once user's Cardano VKH is stored
+    const ownerVkhHex = (req.body as any).ownerVkhHex;
+    if (!ownerVkhHex) {
+      return res.status(400).json({
+        error: "ownerVkhHex is required (verification key hash in hex format)",
+      });
+    }
+
+    const result = await mintBadge({ ownerVkhHex, level, action });
+
+    logger.info(
+      { userId, txHash: (result as any).txHash },
+      "Badge mint completed"
+    );
+    return res.status(201).json(result);
+  } catch (err) {
+    logger.error(err, "Badge mint failed");
+    next(err);
+  }
+}

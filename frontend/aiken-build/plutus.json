@@ -1,0 +1,78 @@
+{
+  "preamble": {
+    "title": "yotouch/identity-proof",
+    "description": "Aiken validator securing YoTouch identity proofs",
+    "version": "0.1.0",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.19+e525483"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "identity_validator.identity_validator.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/ByteArray"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/identity_validator~1VerificationRedeemer"
+        }
+      },
+      "compiledCode": "59018901010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cc0200092225980099b8748008c01cdd500144c8cc896600266e1d2000300a375400d1323298009bad30100019808800cdd718080012444b30013014002899198008009bac30140032259800800c4c8c8c96600266e1d20003014375401715980099b8f375c6030602a6ea802cdd7180c001c56600266e252078375a60300051598009919b8948018cc0040040088966002003148002266e01200233002002301b00140611329800800c00a97ae04004444b30010028a518992cc004c8cc00400400c896600200314a115980099b8f375c603c00200714a3133002002301f001406480e2294233001004980e801ccc06cdd48008012008405c6eb8c06c009019452820268a50404d14a0809a29410131bac3017301800130170013012375401b132330030033017002375c602a002809a2c8088602000260166ea801a2c8048c030004c030c034004c020dd50014590060c020004c00cdd5004452689b2b20021",
+      "hash": "5030b8e2bd316fa78b977a56707f9376e7c1db92f6476a79a8a44a4c"
+    },
+    {
+      "title": "identity_validator.identity_validator.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "59018901010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cc0200092225980099b8748008c01cdd500144c8cc896600266e1d2000300a375400d1323298009bad30100019808800cdd718080012444b30013014002899198008009bac30140032259800800c4c8c8c96600266e1d20003014375401715980099b8f375c6030602a6ea802cdd7180c001c56600266e252078375a60300051598009919b8948018cc0040040088966002003148002266e01200233002002301b00140611329800800c00a97ae04004444b30010028a518992cc004c8cc00400400c896600200314a115980099b8f375c603c00200714a3133002002301f001406480e2294233001004980e801ccc06cdd48008012008405c6eb8c06c009019452820268a50404d14a0809a29410131bac3017301800130170013012375401b132330030033017002375c602a002809a2c8088602000260166ea801a2c8048c030004c030c034004c020dd50014590060c020004c00cdd5004452689b2b20021",
+      "hash": "5030b8e2bd316fa78b977a56707f9376e7c1db92f6476a79a8a44a4c"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "List$ByteArray": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/ByteArray"
+      }
+    },
+    "identity_validator/VerificationRedeemer": {
+      "title": "VerificationRedeemer",
+      "anyOf": [
+        {
+          "title": "Submit",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "applicant_hash",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "score",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "reviewer_signatures",
+              "$ref": "#/definitions/List$ByteArray"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

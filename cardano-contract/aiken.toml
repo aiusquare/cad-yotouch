@@ -1,0 +1,11 @@
+name = "yotouch/identity-proof"
+version = "0.1.0"
+compiler = "v1.1.19"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Aiken validator securing YoTouch identity proofs"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"

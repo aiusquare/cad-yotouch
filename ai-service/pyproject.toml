@@ -1,0 +1,25 @@
+[project]
+name = "yotouch-ai-service"
+version = "0.1.0"
+description = "FastAPI microservice for biometrics, liveness, and fraud heuristics"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn>=0.32",
+  "pydantic>=2.9",
+  "numpy>=2.1",
+  "onnxruntime>=1.20",
+  "opencv-python-headless>=4.10",
+  "python-multipart>=0.0.9",
+  "httpx>=0.28"
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.7",
+  "pytest>=8.3"
+]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I"]

@@ -1,0 +1,3 @@
+# YoTouch Verification Key
+network=Preprod
+hex=6fd829e8c954c40952865e10be7e1c9457698122352cf1a9be0b55907b4ccfb8
