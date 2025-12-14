@@ -442,22 +442,54 @@ const Dashboard = () => {
       const storedLevel = profile.badge_level ?? 0;
       const storedPoints = profile.badge_points ?? 0;
 
+      const updateProfileWithFallback = async (
+        patch: Record<string, unknown>
+      ): Promise<void> => {
+        const attempt = async (nextPatch: Record<string, unknown>) => {
+          return await supabase
+            .from("profiles")
+            .update(nextPatch)
+            .eq("id", user.id)
+            .select("*")
+            .maybeSingle();
+        };
+
+        const { data, error } = await attempt(patch);
+        if (!error) {
+          if (data) setProfile(data);
+          return;
+        }
+
+        const errAny = error as any;
+        const message = String(errAny?.message ?? "");
+        const code = String(errAny?.code ?? "");
+
+        // If the connected Supabase project hasn't applied migrations yet,
+        // PostgREST returns PGRST204: unknown column in schema cache.
+        if (code === "PGRST204") {
+          const match = message.match(/'([^']+)'/);
+          const missingColumn = match?.[1];
+          if (
+            missingColumn &&
+            Object.prototype.hasOwnProperty.call(patch, missingColumn)
+          ) {
+            const { [missingColumn]: _removed, ...rest } = patch as any;
+            const retry = await attempt(rest);
+            if (retry.error) throw retry.error;
+            if (retry.data) setProfile(retry.data);
+            return;
+          }
+        }
+
+        throw error;
+      };
+
       // Only update badge_points and timestamp; badge_level updates after blockchain mint
       if (storedPoints !== totalPoints) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .update({
-            badge_points: totalPoints,
-            badge_last_updated_at: new Date().toISOString(),
-          })
-          .eq("id", user.id)
-          .select("*")
-          .maybeSingle();
-
-        if (error) throw error;
-        if (data) {
-          setProfile(data);
-        }
+        await updateProfileWithFallback({
+          badge_points: totalPoints,
+          badge_last_updated_at: new Date().toISOString(),
+        });
       }
 
       setBadgeStats({
@@ -588,19 +620,12 @@ const Dashboard = () => {
       // Determine action: Init, Upgrade, or Retire
       const action = storedLevel === 0 ? "Init" : "Upgrade";
 
-      // TODO: Fetch verification key hash from Cardano wallet or stored profile data
-      // For now, we'll use a placeholder; in production, this should come from the user's wallet
-      const ownerVkhHex =
-        (profile as any)?.cardano_vkh ||
-        "0000000000000000000000000000000000000000000000000000000000000000";
-
       const response = await fetch("/api/badges/mint", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           level: computedLevel,
           action,
-          ownerVkhHex,
         }),
       });
 
@@ -611,21 +636,46 @@ const Dashboard = () => {
 
       const result = await response.json();
 
-      // Update profile with the new badge level if badges are loaded
+      // Update profile with the new badge level if profiles table supports the columns.
       if (profile) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .update({
-            badge_level: computedLevel,
-            badge_last_updated_at: new Date().toISOString(),
-          })
-          .eq("id", user.id)
-          .select("*")
-          .maybeSingle();
+        const attempt = async (nextPatch: Record<string, unknown>) => {
+          return await supabase
+            .from("profiles")
+            .update(nextPatch)
+            .eq("id", user.id)
+            .select("*")
+            .maybeSingle();
+        };
 
-        if (error) throw error;
-        if (data) {
-          setProfile(data);
+        const patch: Record<string, unknown> = {
+          badge_level: computedLevel,
+          badge_last_updated_at: new Date().toISOString(),
+        };
+
+        const { data, error } = await attempt(patch);
+        if (!error) {
+          if (data) setProfile(data);
+        } else {
+          const errAny = error as any;
+          const message = String(errAny?.message ?? "");
+          const code = String(errAny?.code ?? "");
+          if (code === "PGRST204") {
+            const match = message.match(/'([^']+)'/);
+            const missingColumn = match?.[1];
+            if (
+              missingColumn &&
+              Object.prototype.hasOwnProperty.call(patch, missingColumn)
+            ) {
+              const { [missingColumn]: _removed, ...rest } = patch as any;
+              const retry = await attempt(rest);
+              if (retry.error) throw retry.error;
+              if (retry.data) setProfile(retry.data);
+            } else {
+              throw error;
+            }
+          } else {
+            throw error;
+          }
         }
       }
 

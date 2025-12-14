@@ -20,15 +20,8 @@ export async function handleMintBadge(
 
     logger.info({ userId, level, action }, "Badge mint requested");
 
-    // Get owner VKH from request body (required for now)
-    // TODO: Fetch from Supabase profiles table once user's Cardano VKH is stored
+    // Custodial mode: the backend uses its own signing key; any provided ownerVkhHex is ignored.
     const ownerVkhHex = (req.body as any).ownerVkhHex;
-    if (!ownerVkhHex) {
-      return res.status(400).json({
-        error: "ownerVkhHex is required (verification key hash in hex format)",
-      });
-    }
-
     const result = await mintBadge({ ownerVkhHex, level, action });
 
     logger.info(

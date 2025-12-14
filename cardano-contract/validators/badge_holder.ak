@@ -1,7 +1,6 @@
 use aiken/collection/list
 use aiken/crypto.{ScriptHash, VerificationKeyHash}
 use aiken/primitive/bytearray
-use aiken/primitive/string
 use cardano/address.{Credential}
 use cardano/assets
 use cardano/transaction
@@ -29,10 +28,9 @@ fn ensure_level(target: Int) -> Bool {
 }
 
 fn badge_asset_name(owner: VerificationKeyHash, level: Int) -> ByteArray {
-  let level_str = string.from_int(level)
-  let owner_hex = bytearray.to_hex(owner)
-  string.join([@"YoBadge", level_str, owner_hex], @"-")
-    |> string.to_bytearray
+  // Asset names are limited to 32 bytes.
+  // Compact format: 0x59 ('Y') || level_u8 || owner_vkh(28 bytes)
+  bytearray.concat(#"59", bytearray.concat(bytearray.from_int_big_endian(level, 1), owner))
 }
 
 fn signer_present(signers: List<VerificationKeyHash>, owner: VerificationKeyHash) -> Bool {

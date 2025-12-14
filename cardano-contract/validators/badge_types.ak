@@ -1,6 +1,5 @@
 use aiken/collection/list
 use aiken/primitive/bytearray
-use aiken/primitive/string
 use aiken/crypto.{VerificationKeyHash}
 use cardano/assets.{PolicyId}
 
@@ -44,8 +43,8 @@ pub fn ensure_level(target: Int) -> Bool {
 }
 
 pub fn badge_asset_name(owner: VerificationKeyHash, level: Int) -> ByteArray {
-  let level_str = string.from_int(level)
-  let owner_hex = bytearray.to_hex(owner)
-  string.join([@"YoBadge", level_str, owner_hex], @"-")
-    |> string.to_bytearray
+  // Asset names are limited to 32 bytes.
+  // Compact format: 0x59 ('Y') || level_u8 || owner_vkh(28 bytes)
+  // Total = 1 + 1 + 28 = 30 bytes.
+  bytearray.concat(#"59", bytearray.concat(bytearray.from_int_big_endian(level, 1), owner))
 }

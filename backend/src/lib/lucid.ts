@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import validator from "../../../new_frontend/aiken-build/plutus.json" with { type: "json" };
+import validator from "../../../frontend/aiken-build/plutus.json" with { type: "json" };
 import { env } from "../config/env.js";
 
 type LucidModule = typeof import("lucid-cardano");

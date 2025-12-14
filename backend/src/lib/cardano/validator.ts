@@ -1,5 +1,5 @@
 import * as Cardano from "@emurgo/cardano-serialization-lib-nodejs";
-import validatorBundle from "../../../../new_frontend/aiken-build/plutus.json" with { type: "json" };
+import validatorBundle from "../../../../frontend/aiken-build/plutus.json" with { type: "json" };
 
 const compiledValidatorHex = (() => {
   const validators = (validatorBundle as any)?.validators ?? [];

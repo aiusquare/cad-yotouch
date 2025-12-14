@@ -37,7 +37,9 @@ export function createBlockfrostClient(): BlockfrostClient {
     headers: {
       project_id: env.BLOCKFROST_PROJECT_ID!,
     },
-    timeout: 20_000,
+    timeout: Number.isFinite(env.BLOCKFROST_TIMEOUT_MS)
+      ? env.BLOCKFROST_TIMEOUT_MS
+      : 60_000,
   });
 }
 
@@ -53,11 +55,16 @@ export async function fetchProtocolParameters(
       return response.data as BlockfrostProtocolParameters;
     } catch (error: any) {
       const isLastAttempt = attempt === maxRetries - 1;
+
+      const status = error?.response?.status;
       const isTransientError =
+        error.code === "ECONNABORTED" ||
         error.code === "ECONNRESET" ||
         error.code === "ENOTFOUND" ||
         error.code === "ETIMEDOUT" ||
-        error.response?.status >= 500;
+        status === 408 ||
+        status === 429 ||
+        status >= 500;
 
       if (!isTransientError || isLastAttempt) {
         throw error;

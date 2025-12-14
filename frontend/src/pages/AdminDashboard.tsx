@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Loader2,
+  Award,
   Shield,
   Users,
   ClipboardList,
