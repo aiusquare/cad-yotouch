@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/index.ts", "use": "@vercel/node" }
-  ],
+  "builds": [{ "src": "api/index.ts", "use": "@vercel/node" }],
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": ["prisma/**", "node_modules/.prisma/**"]
+    }
+  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.ts" },
     { "src": "/", "dest": "/api/index.ts" }
