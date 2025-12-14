@@ -3,7 +3,7 @@
   "builds": [{ "src": "api/index.ts", "use": "@vercel/node" }],
   "functions": {
     "api/index.ts": {
-      "includeFiles": ["prisma/**", "node_modules/.prisma/**"]
+      "includeFiles": "{prisma/**,node_modules/.prisma/**}"
     }
   },
   "routes": [
