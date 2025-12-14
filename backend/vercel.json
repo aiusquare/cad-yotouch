@@ -1,13 +1,15 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "builds": [{ "src": "api/index.ts", "use": "@vercel/node" }],
+  "framework": null,
+  "buildCommand": "npx prisma generate",
   "functions": {
     "api/index.ts": {
       "includeFiles": "{prisma/**,node_modules/.prisma/**}"
     }
   },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.ts" },
-    { "src": "/", "dest": "/api/index.ts" }
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index.ts" },
+    { "source": "/:path*", "destination": "/api/index.ts" }
   ]
 }
