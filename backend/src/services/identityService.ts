@@ -13,6 +13,7 @@ type Applicant = {
   createdAt: Date;
 };
 
+// In-memory store to avoid Prisma dependency; data is lost on restart.
 const applicants: Applicant[] = [];
 
 function generateId() {
