@@ -8,6 +8,7 @@
     "dev": "nodemon --watch src --ext ts --exec ts-node-esm src/server.ts",
     "postinstall": "prisma generate",
     "build": "prisma generate && tsc -p tsconfig.json",
+    "vercel-build": "prisma generate && npm run build",
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
     "wallet:test": "npm run build && node dist/scripts/createWallet.js"
